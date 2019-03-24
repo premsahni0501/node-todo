@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+    <% include common/head.ejs %>
+<body>
+    <div class="container">
+        <h1 class="logo">
+            <img src="./assets/img/logo.svg" alt="logo">
+            <span>Todo App</span>
+        </h1>
+        <form id="addItemForm">
+            <input type="hidden" name="id" value="<%= 'id' %>">
+            <div class="input-group">
+                <input type="text" class="form-control" name="item" id="item" placeholder="Add new item.." value="">
+                <button type="submit" class="btn btn-primary input-group-append">Save</button>
+            </div>
+        </form>
+        <div class="row mt-3">
+            <div class="col col-12">
+                <h6 class="list-header">Todo List</h6>
+                <p class="listUpdateStatus" style="display: none;"></p>
+                <ul class="list todoList">
+                    <% todos.forEach(item=>{ %>
+                        <li><%= item.item %></li>
+                    <% }) %>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.onload = ()=>{
+            const form = document.querySelector("#addItemForm");
+            form.addEventListener("submit", (event)=>{
+                event.preventDefault();
+                const formItemInputField = document.querySelector("#addItemForm input[name='item']");
+                if(form != null && formItemInputField != null){
+                    if(formItemInputField.value == ""){
+                        return;
+                    }
+                    const newItem = { item: formItemInputField.value };
+                    fetch("/todo", {
+                        "method": "POST",
+                        "headers": {
+                            "Content-Type": "application/json"
+                        },
+                        "body": JSON.stringify(newItem)
+                    }).then(res=>{
+                        if(res.ok){
+                            let resp = res.json().then(data=>{
+                                console.log(data);
+                                if(data.status == 1){
+                                    todoListDomMgmt(data.data);
+                                    showMsg("success", data.message);
+                                }
+                            });
+                        }
+                    }).catch(e=>{
+                        console.log(e);
+                    })
+                }
+            });
+            document.querySelectorAll(".todoList li").forEach(ele=>{
+                ele.addEventListener("click", ()=>{
+                    const listItem = ele.textContent.replace(/ /g, "-");
+                    addClickOnListItems(listItem);
+                });
+            })
+        }
+        const showMsg = (type, msg)=>{
+            const msgEle = document.querySelector(".listUpdateStatus");
+            msgEle.textContent = msg;
+            msgEle.style.display = "block";
+            timeout = setTimeout(()=>{
+                msgEle.textContent = "";
+                msgEle.style.display = "none";
+            }, 5000);
+        }
+        const addClickOnListItems = (listItem)=>{
+            console.log(listItem);
+            fetch(
+                "/todo/"+listItem,
+                { 
+                    "method": "DELETE"
+                }
+            ).then(res=>{
+                if(res.ok){
+                    let resp = res.json().then(data=>{
+                        console.log(data);
+                        if(data.status == 1){
+                            todoListDomMgmt(data.data);
+                            showMsg("error", data.message);
+                        }
+                    });
+                }
+            }).catch(e=>{
+                console.log(e);
+            });
+        }
+        const todoListDomMgmt = (listData)=>{
+            if(!listData){
+                return;
+            }
+            const list = listData;
+            let todoList = document.querySelector(".todoList");
+            while(todoList.firstChild){
+                todoList.removeChild(todoList.firstChild);
+            }
+            list.forEach(item=>{
+                const el = document.createElement("li");
+                el.textContent = item.item;
+                todoList.appendChild(el);
+                el.addEventListener("click", ()=>{
+                    const listItem = el.textContent.replace(/ /g, "-");
+                    addClickOnListItems(listItem);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

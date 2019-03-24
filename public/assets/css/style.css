@@ -1,0 +1,72 @@
+html{
+    font-size: 14px;
+}
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+body{
+    font-family: "sf display", "google sans", sans-serif;
+    background: #f6f6f6;
+    color: #222;
+    padding: 1rem;
+    padding-top: 5rem;
+}
+a{
+    text-decoration: none;
+}
+.navbar{
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+.navbar .navbar-brand{
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #000;
+    margin-right: 2rem;
+}
+.list li{
+    padding: 1rem;
+    background: white;
+    border: 1px solid #ddd;
+    border-bottom: none;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+.list li:last-child{
+    border-bottom: 1px solid #ddd;
+}
+.list-header{
+    text-transform: uppercase;
+    color: #666;
+}
+.list li a{
+    color: inherit;
+    display: flex;
+    flex: 0 100%;
+    max-width: 100%;
+    width: 100%;
+    flex-direction: column;
+}
+.list li a p{
+    margin: 0;
+}
+.list li:hover,
+.list li:active{
+    background: #eee;
+    color: #000;
+    text-decoration: line-through;
+}
+.logo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+.logo img{
+    max-width: 3rem;
+    margin-right: 1rem;
+}
