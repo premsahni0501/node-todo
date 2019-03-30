@@ -2,7 +2,7 @@ let bodyParser = require("body-parser");
 let mongoose = require('mongoose');
 const database = require("../config/database");
 console.log(database.db);
-mongoose.connect(database.db);
+mongoose.connect(database.db, {useNewUrlParser: true });
 
 let todoSchema = new mongoose.Schema({
     item: String
