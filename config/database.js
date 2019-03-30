@@ -1,4 +1,4 @@
 module.exports = {
-    db: "mongodb://127.0.0.1:27017/todoApp",
+    db: "mongodb://premsahni0501@gmail.com:Prem0501@mlab@ds229186.mlab.com:29186/node-todo",
     secret: "myscret"
 }
