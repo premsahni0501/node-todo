@@ -25,39 +25,22 @@ a{
     color: #000;
     margin-right: 2rem;
 }
-.list li{
-    padding: 1rem;
-    background: white;
-    border: 1px solid #ddd;
-    border-bottom: none;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    cursor: pointer;
-}
-.list li:last-child{
-    border-bottom: 1px solid #ddd;
-}
 .list-header{
     text-transform: uppercase;
     color: #666;
 }
-.list li a{
-    color: inherit;
+.list-group-item{
+    cursor: pointer;
     display: flex;
-    flex: 0 100%;
-    max-width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+}
+.list-group-item .item{
+    min-height: 1rem;
     width: 100%;
-    flex-direction: column;
 }
-.list li a p{
-    margin: 0;
-}
-.list li:hover,
-.list li:active{
-    background: #eee;
-    color: #000;
+.badge:hover + .item{
     text-decoration: line-through;
 }
 .logo{

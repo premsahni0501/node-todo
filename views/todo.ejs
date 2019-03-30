@@ -8,19 +8,22 @@
             <span>Todo App</span>
         </h1>
         <form id="addItemForm">
-            <input type="hidden" name="id" value="<%= 'id' %>">
+            <input type="hidden" name="id" value="">
             <div class="input-group">
                 <input type="text" class="form-control" name="item" id="item" placeholder="Add new item.." value="">
                 <button type="submit" class="btn btn-primary input-group-append">Save</button>
             </div>
+            <p class="listUpdateStatus" style="display: none;"></p>
         </form>
         <div class="row mt-3">
             <div class="col col-12">
                 <h6 class="list-header">Todo List</h6>
-                <p class="listUpdateStatus" style="display: none;"></p>
-                <ul class="list todoList">
+                <ul class="list-group todoList">
                     <% todos.forEach(item=>{ %>
-                        <li><%= item.item %></li>
+                        <li class="list-group-item" data-id="<%= item.id %>">
+                            <span class="badge badge-primary badge-pill" onclick="deleteItem('<%= item._id %>')">delete</span>
+                            <span class="item" onclick="editItem('<%= item._id %>', '<%= item.item %>')"><%= item.item %></span>
+                        </li>
                     <% }) %>
                 </ul>
             </div>
@@ -32,52 +35,49 @@
             form.addEventListener("submit", (event)=>{
                 event.preventDefault();
                 const formItemInputField = document.querySelector("#addItemForm input[name='item']");
+                const formItemId = document.querySelector("#addItemForm input[name='id']").value;
+                
                 if(form != null && formItemInputField != null){
                     if(formItemInputField.value == ""){
                         return;
                     }
-                    const newItem = { item: formItemInputField.value };
-                    fetch("/todo", {
-                        "method": "POST",
-                        "headers": {
-                            "Content-Type": "application/json"
-                        },
-                        "body": JSON.stringify(newItem)
-                    }).then(res=>{
-                        if(res.ok){
-                            let resp = res.json().then(data=>{
-                                console.log(data);
-                                if(data.status == 1){
-                                    todoListDomMgmt(data.data);
-                                    showMsg("success", data.message);
-                                }
-                            });
-                        }
-                    }).catch(e=>{
-                        console.log(e);
-                    })
+                    if(formItemId == ""){
+                        addItem(formItemInputField.value);
+                    }
+                    else{
+                        updateItem(formItemId, formItemInputField.value);
+                    }
                 }
             });
-            document.querySelectorAll(".todoList li").forEach(ele=>{
-                ele.addEventListener("click", ()=>{
-                    const listItem = ele.textContent.replace(/ /g, "-");
-                    addClickOnListItems(listItem);
-                });
+        }
+
+        const addItem = (itemContent) => {
+            fetch("/todo", {
+                "method": "POST",
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": JSON.stringify({item: itemContent})
+            }).then(res=>{
+                if(res.ok){
+                    let resp = res.json().then(data=>{
+                        console.log(data);
+                        if(data.status == 1){
+                            todoListDomMgmt(data.response);
+                            showMsg("success", data.msg);
+                            document.querySelector("#addItemForm").reset();
+                            document.querySelector("#addItemForm [name='id']").value = '';
+                        }
+                    });
+                }
+            }).catch(e=>{
+                console.log(e);
             })
         }
-        const showMsg = (type, msg)=>{
-            const msgEle = document.querySelector(".listUpdateStatus");
-            msgEle.textContent = msg;
-            msgEle.style.display = "block";
-            timeout = setTimeout(()=>{
-                msgEle.textContent = "";
-                msgEle.style.display = "none";
-            }, 5000);
-        }
-        const addClickOnListItems = (listItem)=>{
-            console.log(listItem);
+
+        const deleteItem = (itemId) => {
             fetch(
-                "/todo/"+listItem,
+                "/todo/"+itemId,
                 { 
                     "method": "DELETE"
                 }
@@ -86,14 +86,60 @@
                     let resp = res.json().then(data=>{
                         console.log(data);
                         if(data.status == 1){
-                            todoListDomMgmt(data.data);
-                            showMsg("error", data.message);
+                            todoListDomMgmt(data.response);
+                            showMsg("error", data.msg);
                         }
                     });
                 }
             }).catch(e=>{
                 console.log(e);
             });
+        }
+        const updateItem = (itemId, itemContent) => {
+            fetch("/update-todo", {
+                "method": "POST",
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": JSON.stringify({id: itemId, content: itemContent})
+            }).then(res=>{
+                if(res.ok){
+                    let resp = res.json().then(data=>{
+                        console.log(data);
+                        if(data.status == 1){
+                            todoListDomMgmt(data.response);
+                            showMsg("success", data.msg);
+                            document.querySelector("#addItemForm").reset();
+                            document.querySelector("#addItemForm [name='id']").value = '';
+                        }
+                    });
+                }
+            }).catch(e=>{
+                console.log(e);
+            });
+        }
+        const editItem = (itemId, itemContent) => {
+            document.querySelector("#addItemForm [name='id']").value = itemId;
+            document.querySelector("#addItemForm #item").value = itemContent;
+        }
+        const showMsg = (type, msg)=>{
+            const msgEle = document.querySelector(".listUpdateStatus");
+            msgEle.textContent = msg;
+            msgEle.style.display = "block";
+            if(msgEle.classList.contains("text-danger"))
+            msgEle.classList.remove("text-danger");
+            if(msgEle.classList.contains("text-success"))
+            msgEle.classList.remove("text-success");
+
+            msgEle.classList.add(type=="error"?"text-danger":"text-success");
+            timeout = setTimeout(()=>{
+                msgEle.textContent = "";
+                msgEle.style.display = "none";
+                if(msgEle.classList.contains("text-danger"))
+                msgEle.classList.remove("text-danger");
+                if(msgEle.classList.contains("text-success"))
+                msgEle.classList.remove("text-success");
+            }, 5000);
         }
         const todoListDomMgmt = (listData)=>{
             if(!listData){
@@ -106,12 +152,21 @@
             }
             list.forEach(item=>{
                 const el = document.createElement("li");
-                el.textContent = item.item;
+                el.className = "list-group-item";
+
+                const elDeleteButton = document.createElement("span");
+                elDeleteButton.textContent = "delete";
+                elDeleteButton.className = "badge badge-primary badge-pill";
+                elDeleteButton.setAttribute("onclick", `deleteItem('${item._id}')`);
+                el.appendChild(elDeleteButton);
+                
+                const elItem = document.createElement("span");
+                elItem.textContent = item.item;
+                elItem.className = "item";
+                elItem.setAttribute("onclick", `editItem('${item._id}', '${item.item}')`);
+                el.appendChild(elItem);
+
                 todoList.appendChild(el);
-                el.addEventListener("click", ()=>{
-                    const listItem = el.textContent.replace(/ /g, "-");
-                    addClickOnListItems(listItem);
-                });
             });
         }
     </script>

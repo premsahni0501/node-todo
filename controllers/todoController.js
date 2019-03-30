@@ -1,43 +1,88 @@
 let bodyParser = require("body-parser");
+let mongoose = require('mongoose');
+const database = require("../config/database");
+console.log(database.db);
+mongoose.connect(database.db);
+
+let todoSchema = new mongoose.Schema({
+    item: String
+});
+let Todo = mongoose.model("Todo", todoSchema);
+
 let jsonBodyParser = bodyParser.json({extended: false});
-let todoData = [
-    {
-        "item": "get milk"
-    },
-    {
-        "item": "walk dog"
-    },
-    {
-        "item": "kick some coding ass"
-    }
-];
+
+const getAllTodos = (req, res, dataOnly, successMsg) => {
+    Todo.find({}, (err, data)=>{
+        if(err){
+            if(dataOnly == true){
+                res.json({status: 0,msg: "Something went wrong, please tru after some time.", response: []})
+            }
+            else{
+                res.render("todo", {todos: []});
+            }
+        }
+        else{
+            if(dataOnly == true){
+                res.json({status: 1,msg: successMsg, response: data.reverse()})
+            }
+            else{
+                res.render("todo", {todos: data.reverse()});
+            }
+        }
+    })
+}
 module.exports = (app)=>{
+    app.get("/", (req, res)=>{
+        getAllTodos(req, res, false, "Success");
+    })
     app.get("/todo", (req, res)=>{
-        res.render("todo", {todos: todoData});
+        getAllTodos(req, res, false, "Success");
     });
     app.post("/todo", jsonBodyParser, (req, res)=>{
         console.log(req.body);
         if(req.body != "" || req.body != null){
-            if(todoData.findIndex(item => item.item == req.body.item) == -1){
-                todoData.push(req.body);
-                res.json({status: 1, message: "Item added successfully.", data: todoData.reverse()});
-            }else{
-                res.json({status: 1, message: "Item already exists", data: todoData});
-            }
+            Todo(req.body).save((err)=>{
+                if(err){
+                    res.json({status: 0, msg: "Failed to add todo item"});
+                }
+                else{
+                    getAllTodos(req, res, true, "Item Added successfully");
+                }
+            })
         }
         else{
-            res.json({status: 0, message: "Failed to add item."});
+            res.json({status: 0, msg: "No Item provided."});
+        }
+
+    });
+    app.post("/update-todo", jsonBodyParser, (req, res)=>{
+        console.log(req.body.id, req.body.content);
+        if(req.body != "" || req.body != null){
+            Todo.where({_id: req.body.id}).updateOne({item: req.body.content}, (err, data)=>{
+                if(err){
+                    res.json({status: 0, msg: "Failed to add todo item"});
+                }
+                else{
+                    console.log(data);
+                    getAllTodos(req, res, true, "Item Updated successfully");
+                }
+            })
+        }
+        else{
+            res.json({status: 0, msg: "No Item provided."});
         }
 
     });
     app.delete("/todo/:item", (req, res)=>{
         if(req.params.item != ""){
-            todoData = todoData.filter(item=>{
-                return item.item.replace(/ /g, "-") !== req.params.item;
-            });
-            res.json({status: 1, message: "Item removed successfully.", data: todoData});
-            return;
+            Todo.find({_id: req.params.item}).deleteOne((err, data)=>{
+                if(err){
+                    res.json({status: 0, msg: "Failed to delete item."});
+                }
+                else{
+                    getAllTodos(req, res, true, "Item deleted successfully");
+                }
+            })
         }
-        res.json({status: 0, message: "Failed to delete item."});
     });
 }
