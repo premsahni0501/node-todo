@@ -14,7 +14,7 @@
                     <input type="text" class="form-control" name="name" id="name" placeholder="Enter your name" value="">
                 </div>
                 <div class="form-group">
-                    <input type="text" class="form-control" name="username" id="username" placeholder="Enter username" value="">
+                    <input type="email" class="form-control" name="email" id="email" placeholder="Enter email" value="">
                 </div>
                 <div class="form-group">
                     <input type="password" class="form-control" name="password" id="password" placeholder="Enter password" value="">
@@ -23,7 +23,9 @@
                     <input type="password" class="form-control" name="confirmPassword" id="confirmPassword" placeholder="Re-enter password" value="">
                 </div>
                 <button type="submit" class="btn btn-primary">Register</button>
-                <p class="authStatus" style="display: none;"></p>
+                <% if(typeof status !== 'undefined' && status == 0){ %>
+                <p class="authStatus<%= status==0?' text-danger':'' %>" style="display:<%= (msg?'block':'none') %>"><%= msg %></p>
+                <% } %>
             </div>
         </form>
         <div class="row mt-3">
@@ -32,146 +34,5 @@
             </div>
         </div>
     </div>
-    <script>
-        window.onload = ()=>{
-            const form = document.querySelector("#addItemForm");
-            form.addEventListener("submit", (event)=>{
-                event.preventDefault();
-                const formItemInputField = document.querySelector("#addItemForm input[name='item']");
-                const formItemId = document.querySelector("#addItemForm input[name='id']").value;
-                
-                if(form != null && formItemInputField != null){
-                    if(formItemInputField.value == ""){
-                        return;
-                    }
-                    if(formItemId == ""){
-                        addItem(formItemInputField.value);
-                    }
-                    else{
-                        updateItem(formItemId, formItemInputField.value);
-                    }
-                }
-            });
-        }
-
-        const addItem = (itemContent) => {
-            fetch("/todo", {
-                "method": "POST",
-                "headers": {
-                    "Content-Type": "application/json"
-                },
-                "body": JSON.stringify({item: itemContent})
-            }).then(res=>{
-                if(res.ok){
-                    let resp = res.json().then(data=>{
-                        console.log(data);
-                        if(data.status == 1){
-                            todoListDomMgmt(data.response);
-                            showMsg("success", data.msg);
-                            document.querySelector("#addItemForm").reset();
-                            document.querySelector("#addItemForm [name='id']").value = '';
-                        }
-                    });
-                }
-            }).catch(e=>{
-                console.log(e);
-            })
-        }
-
-        const deleteItem = (itemId) => {
-            fetch(
-                "/todo/"+itemId,
-                { 
-                    "method": "DELETE"
-                }
-            ).then(res=>{
-                if(res.ok){
-                    let resp = res.json().then(data=>{
-                        console.log(data);
-                        if(data.status == 1){
-                            todoListDomMgmt(data.response);
-                            showMsg("error", data.msg);
-                        }
-                    });
-                }
-            }).catch(e=>{
-                console.log(e);
-            });
-        }
-        const updateItem = (itemId, itemContent) => {
-            fetch("/update-todo", {
-                "method": "POST",
-                "headers": {
-                    "Content-Type": "application/json"
-                },
-                "body": JSON.stringify({id: itemId, content: itemContent})
-            }).then(res=>{
-                if(res.ok){
-                    let resp = res.json().then(data=>{
-                        console.log(data);
-                        if(data.status == 1){
-                            todoListDomMgmt(data.response);
-                            showMsg("success", data.msg);
-                            document.querySelector("#addItemForm").reset();
-                            document.querySelector("#addItemForm [name='id']").value = '';
-                        }
-                    });
-                }
-            }).catch(e=>{
-                console.log(e);
-            });
-        }
-        const editItem = (itemId, itemContent) => {
-            document.querySelector("#addItemForm [name='id']").value = itemId;
-            document.querySelector("#addItemForm #item").value = itemContent;
-        }
-        const showMsg = (type, msg)=>{
-            const msgEle = document.querySelector(".listUpdateStatus");
-            msgEle.textContent = msg;
-            msgEle.style.display = "block";
-            if(msgEle.classList.contains("text-danger"))
-            msgEle.classList.remove("text-danger");
-            if(msgEle.classList.contains("text-success"))
-            msgEle.classList.remove("text-success");
-
-            msgEle.classList.add(type=="error"?"text-danger":"text-success");
-            timeout = setTimeout(()=>{
-                msgEle.textContent = "";
-                msgEle.style.display = "none";
-                if(msgEle.classList.contains("text-danger"))
-                msgEle.classList.remove("text-danger");
-                if(msgEle.classList.contains("text-success"))
-                msgEle.classList.remove("text-success");
-            }, 5000);
-        }
-        const todoListDomMgmt = (listData)=>{
-            if(!listData){
-                return;
-            }
-            const list = listData;
-            let todoList = document.querySelector(".todoList");
-            while(todoList.firstChild){
-                todoList.removeChild(todoList.firstChild);
-            }
-            list.forEach(item=>{
-                const el = document.createElement("li");
-                el.className = "list-group-item";
-
-                const elDeleteButton = document.createElement("span");
-                elDeleteButton.textContent = "delete";
-                elDeleteButton.className = "badge badge-primary badge-pill";
-                elDeleteButton.setAttribute("onclick", `deleteItem('${item._id}')`);
-                el.appendChild(elDeleteButton);
-                
-                const elItem = document.createElement("span");
-                elItem.textContent = item.item;
-                elItem.className = "item";
-                elItem.setAttribute("onclick", `editItem('${item._id}', '${item.item}')`);
-                el.appendChild(elItem);
-
-                todoList.appendChild(el);
-            });
-        }
-    </script>
 </body>
 </html>

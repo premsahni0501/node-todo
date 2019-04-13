@@ -4,7 +4,8 @@ let todoSchema, TodoModel, mongoose;
 module.exports = (mongooseRef) => {
     mongoose = mongooseRef;
     todoSchema = new mongoose.Schema({
-        item: String
+        item: String,
+        userId: String
     });
     TodoModel = mongoose.model("Todo", todoSchema);
 }

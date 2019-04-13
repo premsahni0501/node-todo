@@ -3,14 +3,23 @@
     <% include common/head.ejs %>
 <body>
     <div class="container">
+        <div class="btn btn-default profileBtn">
+            <%= data.userData.email %>
+            <small><a href="#" onclick="logout()">(Logout)</a></small>
+        </div>
         <h1 class="logo">
-            <img src="./assets/img/logo.svg" alt="logo">
+            <img src="/assets/img/logo.svg" alt="logo">
             <span>Todo App</span>
         </h1>
-        <form id="addItemForm">
+        <% if(typeof status !== 'undefined' && status == 0){ %>
+        <p class="authStatus<%= status==0?' text-danger':'' %>" style="display:<%= (msg?'block':'none') %>"><%= msg %></p>
+        <% } %>
+        <form id="addItemForm" onsubmit="submitTodo(event)">
             <input type="hidden" name="id" value="">
+            <input type="hidden" name="userId" value="<%= data.userData._id %>">
             <div class="input-group">
-                <input type="text" class="form-control" name="item" id="item" placeholder="Add new item.." value="">
+                <button type="button" class="btn btn-danger input-group-prepend updateTodoCancel d-none" onclick="cancelUpdateItem()">Cancel</button>
+                <input type="text" class="form-control" name="item" id="item" placeholder="Add new item.." value="" maxlength="100" required>
                 <button type="submit" class="btn btn-primary input-group-append">Save</button>
             </div>
             <p class="listUpdateStatus" style="display: none;"></p>
@@ -19,51 +28,61 @@
             <div class="col col-12">
                 <h6 class="list-header">Todo List</h6>
                 <ul class="list-group todoList">
-                    <% todos.forEach(item=>{ %>
+                    <% if(status == 1){
+                        data.todoData.forEach(item=>{ %>
                         <li class="list-group-item" data-id="<%= item.id %>">
                             <span class="badge badge-primary badge-pill" onclick="deleteItem('<%= item._id %>')">delete</span>
                             <span class="item" onclick="editItem('<%= item._id %>', '<%= item.item %>')"><%= item.item %></span>
                         </li>
-                    <% }) %>
+                    <% })
+                     } %>
                 </ul>
             </div>
         </div>
     </div>
     <script>
-        window.onload = ()=>{
-            const form = document.querySelector("#addItemForm");
-            form.addEventListener("submit", (event)=>{
-                event.preventDefault();
-                const formItemInputField = document.querySelector("#addItemForm input[name='item']");
-                const formItemId = document.querySelector("#addItemForm input[name='id']").value;
-                
-                if(form != null && formItemInputField != null){
-                    if(formItemInputField.value == ""){
-                        return;
-                    }
-                    if(formItemId == ""){
-                        addItem(formItemInputField.value);
-                    }
-                    else{
-                        updateItem(formItemId, formItemInputField.value);
-                    }
+        logout = ()=>{
+            // window.history.push( {} , '', '/logout' );
+            window.location.href='/logout';
+        }
+        submitTodo = (event)=>{
+            event.preventDefault();
+            const formItemInputField = document.querySelector("#addItemForm input[name='item']");
+            const formItemId = document.querySelector("#addItemForm input[name='id']").value;
+            const formUserId = document.querySelector("#addItemForm input[name='userId']").value;
+            
+            if(formItemInputField != null){
+                if(formItemInputField.value == ""){
+                    return;
                 }
-            });
+                if(formItemId == ""){
+                    addItem(formItemInputField.value, formUserId);
+                }
+                else{
+                    updateItem(formItemId, formItemInputField.value, formUserId);
+                }
+            }
         }
 
-        const addItem = (itemContent) => {
+        const cancelUpdateItem = ()=>{
+            console.log("cancel");
+            document.querySelector("#addItemForm input[name='id']").value = "";
+            document.querySelector(".updateTodoCancel").classList.add("d-none");
+        }
+
+        const addItem = (itemContent, formUserId) => {
             fetch("/todo", {
                 "method": "POST",
                 "headers": {
                     "Content-Type": "application/json"
                 },
-                "body": JSON.stringify({item: itemContent})
+                "body": JSON.stringify({item: itemContent, userId: formUserId})
             }).then(res=>{
                 if(res.ok){
                     let resp = res.json().then(data=>{
                         console.log(data);
                         if(data.status == 1){
-                            todoListDomMgmt(data.response);
+                            todoListDomMgmt(data.data);
                             showMsg("success", data.msg);
                             document.querySelector("#addItemForm").reset();
                             document.querySelector("#addItemForm [name='id']").value = '';
@@ -76,17 +95,21 @@
         }
 
         const deleteItem = (itemId) => {
+            const _userId = document.querySelector("#addItemForm input[name='userId']").value;
             fetch(
-                "/todo/"+itemId,
-                { 
-                    "method": "DELETE"
+                "/todo",{ 
+                    "method": "DELETE",
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    "body": JSON.stringify({itemId: itemId, userId: _userId})
                 }
             ).then(res=>{
                 if(res.ok){
                     let resp = res.json().then(data=>{
                         console.log(data);
                         if(data.status == 1){
-                            todoListDomMgmt(data.response);
+                            todoListDomMgmt(data.data);
                             showMsg("error", data.msg);
                         }
                     });
@@ -95,22 +118,22 @@
                 console.log(e);
             });
         }
-        const updateItem = (itemId, itemContent) => {
+        const updateItem = (itemId, itemContent, formUserId) => {
             fetch("/update-todo", {
                 "method": "POST",
                 "headers": {
                     "Content-Type": "application/json"
                 },
-                "body": JSON.stringify({id: itemId, content: itemContent})
+                "body": JSON.stringify({id: itemId, content: itemContent, userId: formUserId})
             }).then(res=>{
                 if(res.ok){
                     let resp = res.json().then(data=>{
                         console.log(data);
                         if(data.status == 1){
-                            todoListDomMgmt(data.response);
+                            todoListDomMgmt(data.data);
                             showMsg("success", data.msg);
                             document.querySelector("#addItemForm").reset();
-                            document.querySelector("#addItemForm [name='id']").value = '';
+                            cancelUpdateItem();
                         }
                     });
                 }
@@ -119,8 +142,12 @@
             });
         }
         const editItem = (itemId, itemContent) => {
+            document.querySelector(".logo").scrollIntoView({ behavior: 'smooth'});
             document.querySelector("#addItemForm [name='id']").value = itemId;
             document.querySelector("#addItemForm #item").value = itemContent;
+            if(document.querySelector(".updateTodoCancel").classList.contains("d-none")){
+                document.querySelector(".updateTodoCancel").classList.remove("d-none");
+            }
         }
         const showMsg = (type, msg)=>{
             const msgEle = document.querySelector(".listUpdateStatus");
@@ -145,7 +172,7 @@
             if(!listData){
                 return;
             }
-            const list = listData;
+            const list = listData.todoData;
             let todoList = document.querySelector(".todoList");
             while(todoList.firstChild){
                 todoList.removeChild(todoList.firstChild);
