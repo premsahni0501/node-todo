@@ -37,6 +37,9 @@ app.use(urlencodedBodyParser);
 app.use(jsonBodyParser);
 app.use(expressSession({secret: 'prem0501', saveUninitialized: false, resave: true }));
 
+app.get('/ionic', function(req, res){
+  res.sendFile(__dirname + '/public/ionic/index.html');
+});
 // instantiate models
 userModel(mongoose);
 todoModel(mongoose);
