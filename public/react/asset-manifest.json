@@ -1,0 +1,11 @@
+{
+  "files": {
+    "main.css": "/static/css/main.cea51e5a.chunk.css",
+    "main.js": "/static/js/main.42808fdc.chunk.js",
+    "runtime~main.js": "/static/js/runtime~main.a8a9905a.js",
+    "static/js/2.fe6f4c48.chunk.js": "/static/js/2.fe6f4c48.chunk.js",
+    "index.html": "/index.html",
+    "precache-manifest.88035648a546c0a6b0122867e6b62eca.js": "/precache-manifest.88035648a546c0a6b0122867e6b62eca.js",
+    "service-worker.js": "/service-worker.js"
+  }
+}
