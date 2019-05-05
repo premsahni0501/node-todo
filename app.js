@@ -40,6 +40,9 @@ app.use(expressSession({secret: 'prem0501', saveUninitialized: false, resave: tr
 app.get('/ionic', function(req, res){
   res.sendFile(__dirname + '/public/ionic/index.html');
 });
+app.get('/react', function(req, res){
+  res.sendFile(__dirname + '/public/react/index.html');
+});
 // instantiate models
 userModel(mongoose);
 todoModel(mongoose);
