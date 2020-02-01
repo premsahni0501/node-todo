@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-    <% include common/head.ejs %>
+<% include common/head.ejs %>
+
 <body>
     <div class="container">
         <div class="btn btn-default profileBtn">
@@ -12,14 +13,17 @@
             <span>Todo App</span>
         </h1>
         <% if(typeof status !== 'undefined' && status == 0){ %>
-        <p class="authStatus<%= status==0?' text-danger':'' %>" style="display:<%= (msg?'block':'none') %>"><%= msg %></p>
+        <p class="authStatus<%= status==0?' text-danger':'' %>" style="display: <%= (msg?'block':'none') %>"><%= msg %>
+        </p>
         <% } %>
         <form id="addItemForm" onsubmit="submitTodo(event)">
             <input type="hidden" name="id" value="">
             <input type="hidden" name="userId" value="<%= data.userData._id %>">
             <div class="input-group">
-                <button type="button" class="btn btn-danger input-group-prepend updateTodoCancel d-none" onclick="cancelUpdateItem()">Cancel</button>
-                <input type="text" class="form-control" name="item" id="item" placeholder="Add new item.." value="" maxlength="100" required>
+                <button type="button" class="btn btn-danger input-group-prepend updateTodoCancel d-none"
+                    onclick="cancelUpdateItem()">Cancel</button>
+                <input type="text" class="form-control" name="item" id="item" placeholder="Add new item.." value=""
+                    maxlength="100" required>
                 <button type="submit" class="btn btn-primary input-group-append">Save</button>
             </div>
             <p class="listUpdateStatus" style="display: none;"></p>
@@ -30,10 +34,12 @@
                 <ul class="list-group todoList">
                     <% if(status == 1){
                         data.todoData.forEach(item=>{ %>
-                        <li class="list-group-item" data-id="<%= item.id %>">
-                            <span class="badge badge-primary badge-pill" onclick="deleteItem('<%= item._id %>')">delete</span>
-                            <span class="item" onclick="editItem('<%= item._id %>', '<%= item.item %>')"><%= item.item %></span>
-                        </li>
+                    <li class="list-group-item" data-id="<%= item.id %>">
+                        <span class="badge badge-primary badge-pill"
+                            onclick="deleteItem('<%= item._id %>')">delete</span>
+                        <span class="item"
+                            onclick="editItem('<%= item._id %>', '<%= item.item %>')"><%= item.item %></span>
+                    </li>
                     <% })
                      } %>
                 </ul>
@@ -41,30 +47,30 @@
         </div>
     </div>
     <script>
-        logout = ()=>{
+        logout = () => {
             // window.history.push( {} , '', '/logout' );
-            window.location.href='/logout';
+            window.location.href = '/logout';
         }
-        submitTodo = (event)=>{
+        submitTodo = (event) => {
             event.preventDefault();
             const formItemInputField = document.querySelector("#addItemForm input[name='item']");
             const formItemId = document.querySelector("#addItemForm input[name='id']").value;
             const formUserId = document.querySelector("#addItemForm input[name='userId']").value;
-            
-            if(formItemInputField != null){
-                if(formItemInputField.value == ""){
+
+            if (formItemInputField != null) {
+                if (formItemInputField.value == "") {
                     return;
                 }
-                if(formItemId == ""){
+                if (formItemId == "") {
                     addItem(formItemInputField.value, formUserId);
                 }
-                else{
+                else {
                     updateItem(formItemId, formItemInputField.value, formUserId);
                 }
             }
         }
 
-        const cancelUpdateItem = ()=>{
+        const cancelUpdateItem = () => {
             console.log("cancel");
             document.querySelector("#addItemForm input[name='id']").value = "";
             document.querySelector(".updateTodoCancel").classList.add("d-none");
@@ -76,12 +82,12 @@
                 "headers": {
                     "Content-Type": "application/json"
                 },
-                "body": JSON.stringify({item: itemContent, userId: formUserId})
-            }).then(res=>{
-                if(res.ok){
-                    let resp = res.json().then(data=>{
+                "body": JSON.stringify({ item: itemContent, userId: formUserId })
+            }).then(res => {
+                if (res.ok) {
+                    let resp = res.json().then(data => {
                         console.log(data);
-                        if(data.status == 1){
+                        if (data.status == 1) {
                             todoListDomMgmt(data.data);
                             showMsg("success", data.msg);
                             document.querySelector("#addItemForm").reset();
@@ -89,7 +95,7 @@
                         }
                     });
                 }
-            }).catch(e=>{
+            }).catch(e => {
                 console.log(e);
             })
         }
@@ -97,24 +103,24 @@
         const deleteItem = (itemId) => {
             const _userId = document.querySelector("#addItemForm input[name='userId']").value;
             fetch(
-                "/todo",{ 
-                    "method": "DELETE",
-                    "headers": {
-                        "Content-Type": "application/json"
-                    },
-                    "body": JSON.stringify({itemId: itemId, userId: _userId})
-                }
-            ).then(res=>{
-                if(res.ok){
-                    let resp = res.json().then(data=>{
+                "/todo", {
+                "method": "DELETE",
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": JSON.stringify({ itemId: itemId, userId: _userId })
+            }
+            ).then(res => {
+                if (res.ok) {
+                    let resp = res.json().then(data => {
                         console.log(data);
-                        if(data.status == 1){
+                        if (data.status == 1) {
                             todoListDomMgmt(data.data);
                             showMsg("error", data.msg);
                         }
                     });
                 }
-            }).catch(e=>{
+            }).catch(e => {
                 console.log(e);
             });
         }
@@ -124,12 +130,12 @@
                 "headers": {
                     "Content-Type": "application/json"
                 },
-                "body": JSON.stringify({id: itemId, content: itemContent, userId: formUserId})
-            }).then(res=>{
-                if(res.ok){
-                    let resp = res.json().then(data=>{
+                "body": JSON.stringify({ id: itemId, content: itemContent, userId: formUserId })
+            }).then(res => {
+                if (res.ok) {
+                    let resp = res.json().then(data => {
                         console.log(data);
-                        if(data.status == 1){
+                        if (data.status == 1) {
                             todoListDomMgmt(data.data);
                             showMsg("success", data.msg);
                             document.querySelector("#addItemForm").reset();
@@ -137,47 +143,47 @@
                         }
                     });
                 }
-            }).catch(e=>{
+            }).catch(e => {
                 console.log(e);
             });
         }
         const editItem = (itemId, itemContent) => {
-            document.querySelector(".logo").scrollIntoView({ behavior: 'smooth'});
+            document.querySelector(".logo").scrollIntoView({ behavior: 'smooth' });
             document.querySelector("#addItemForm [name='id']").value = itemId;
             document.querySelector("#addItemForm #item").value = itemContent;
-            if(document.querySelector(".updateTodoCancel").classList.contains("d-none")){
+            if (document.querySelector(".updateTodoCancel").classList.contains("d-none")) {
                 document.querySelector(".updateTodoCancel").classList.remove("d-none");
             }
         }
-        const showMsg = (type, msg)=>{
+        const showMsg = (type, msg) => {
             const msgEle = document.querySelector(".listUpdateStatus");
             msgEle.textContent = msg;
             msgEle.style.display = "block";
-            if(msgEle.classList.contains("text-danger"))
-            msgEle.classList.remove("text-danger");
-            if(msgEle.classList.contains("text-success"))
-            msgEle.classList.remove("text-success");
+            if (msgEle.classList.contains("text-danger"))
+                msgEle.classList.remove("text-danger");
+            if (msgEle.classList.contains("text-success"))
+                msgEle.classList.remove("text-success");
 
-            msgEle.classList.add(type=="error"?"text-danger":"text-success");
-            timeout = setTimeout(()=>{
+            msgEle.classList.add(type == "error" ? "text-danger" : "text-success");
+            timeout = setTimeout(() => {
                 msgEle.textContent = "";
                 msgEle.style.display = "none";
-                if(msgEle.classList.contains("text-danger"))
-                msgEle.classList.remove("text-danger");
-                if(msgEle.classList.contains("text-success"))
-                msgEle.classList.remove("text-success");
+                if (msgEle.classList.contains("text-danger"))
+                    msgEle.classList.remove("text-danger");
+                if (msgEle.classList.contains("text-success"))
+                    msgEle.classList.remove("text-success");
             }, 5000);
         }
-        const todoListDomMgmt = (listData)=>{
-            if(!listData){
+        const todoListDomMgmt = (listData) => {
+            if (!listData) {
                 return;
             }
             const list = listData.todoData;
             let todoList = document.querySelector(".todoList");
-            while(todoList.firstChild){
+            while (todoList.firstChild) {
                 todoList.removeChild(todoList.firstChild);
             }
-            list.forEach(item=>{
+            list.forEach(item => {
                 const el = document.createElement("li");
                 el.className = "list-group-item";
 
@@ -186,7 +192,7 @@
                 elDeleteButton.className = "badge badge-primary badge-pill";
                 elDeleteButton.setAttribute("onclick", `deleteItem('${item._id}')`);
                 el.appendChild(elDeleteButton);
-                
+
                 const elItem = document.createElement("span");
                 elItem.textContent = item.item;
                 elItem.className = "item";
@@ -198,4 +204,5 @@
         }
     </script>
 </body>
+
 </html>

@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title><%= data.customerDetails.displayName %></title>
+  <style>
+    @charset "UTF-8";
+
+    button,
+    hr,
+    input {
+      overflow: visible
+    }
+
+    audio,
+    canvas,
+    progress,
+    video {
+      display: inline-block
+    }
+
+    progress,
+    sub,
+    sup {
+      vertical-align: baseline
+    }
+
+    html {
+      font-family: sans-serif;
+      line-height: 1.15;
+      -ms-text-size-adjust: 100%;
+      -webkit-text-size-adjust: 100%
+    }
+
+    body {
+      margin: 0
+    }
+
+    menu,
+    article,
+    aside,
+    details,
+    footer,
+    header,
+    nav,
+    section {
+      display: block
+    }
+
+    h1 {
+      font-size: 2em;
+      margin: .67em 0
+    }
+
+    figcaption,
+    figure,
+    main {
+      display: block
+    }
+
+    figure {
+      margin: 1em 40px
+    }
+
+    hr {
+      box-sizing: content-box;
+      height: 0
+    }
+
+    code,
+    kbd,
+    pre,
+    samp {
+      font-family: monospace, monospace;
+      font-size: 1em
+    }
+
+    a {
+      background-color: transparent;
+      -webkit-text-decoration-skip: objects
+    }
+
+    a:active,
+    a:hover {
+      outline-width: 0
+    }
+
+    abbr[title] {
+      border-bottom: none;
+      text-decoration: underline;
+      text-decoration: underline dotted
+    }
+
+    b,
+    strong {
+      font-weight: bolder
+    }
+
+    dfn {
+      font-style: italic
+    }
+
+    mark {
+      background-color: #ff0;
+      color: #222
+    }
+
+    small {
+      font-size: 80%
+    }
+
+    sub,
+    sup {
+      font-size: 75%;
+      line-height: 0;
+      position: relative
+    }
+
+    sub {
+      bottom: -.25em
+    }
+
+    sup {
+      top: -.5em
+    }
+
+    audio:not([controls]) {
+      display: none;
+      height: 0
+    }
+
+    img {
+      border-style: none
+    }
+
+    svg:not(:root) {
+      overflow: hidden
+    }
+
+    button,
+    input,
+    optgroup,
+    select,
+    textarea {
+      font-family: sans-serif;
+      font-size: 100%;
+      line-height: 1.15;
+      margin: 0
+    }
+
+    button,
+    select {
+      text-transform: none
+    }
+
+    [type=submit],
+    [type=reset],
+    button,
+    html [type=button] {
+      -webkit-appearance: button
+    }
+
+    [type=button]::-moz-focus-inner,
+    [type=reset]::-moz-focus-inner,
+    [type=submit]::-moz-focus-inner,
+    button::-moz-focus-inner {
+      border-style: none;
+      padding: 0
+    }
+
+    [type=button]:-moz-focusring,
+    [type=reset]:-moz-focusring,
+    [type=submit]:-moz-focusring,
+    button:-moz-focusring {
+      outline: ButtonText dotted 1px
+    }
+
+    legend {
+      box-sizing: border-box;
+      color: inherit;
+      display: table;
+      max-width: 100%;
+      padding: 0;
+      white-space: normal
+    }
+
+    textarea {
+      overflow: auto
+    }
+
+    [type=checkbox],
+    [type=radio] {
+      box-sizing: border-box;
+      padding: 0
+    }
+
+    [type=number]::-webkit-inner-spin-button,
+    [type=number]::-webkit-outer-spin-button {
+      height: auto
+    }
+
+    [type=search] {
+      -webkit-appearance: textfield;
+      outline-offset: -2px
+    }
+
+    [type=search]::-webkit-search-cancel-button,
+    [type=search]::-webkit-search-decoration {
+      -webkit-appearance: none
+    }
+
+    ::-webkit-file-upload-button {
+      -webkit-appearance: button;
+      font: inherit
+    }
+
+    summary {
+      display: list-item
+    }
+
+    [hidden],
+    template {
+      display: none
+    }
+  </style>
+  <style>
+    html {
+      font-size: 12px;
+      line-height: 1.2;
+      color: #222;
+      background: #f6f6f6;
+      box-sizing: border-box;
+    }
+
+    body {
+      max-width: 800px;
+      background: white;
+      padding: 5rem 2rem;
+    }
+
+    .container {
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 1rem;
+      padding-right: 1rem;
+    }
+
+    *,
+    *:before,
+    *:after {
+      box-sizing: inherit;
+    }
+
+    .group:after,
+    .row:after,
+    .invoicelist-footer:after {
+      content: "";
+      display: table;
+      clear: both;
+    }
+
+    /**
+* Small Grid
+**/
+    .row {
+      position: relative;
+      display: block;
+      width: 100%;
+      font-size: 0;
+    }
+
+    .col,
+    .logoholder,
+    .me,
+    .info,
+    .bank,
+    [class*="col-"] {
+      vertical-align: top;
+      display: inline-block;
+      font-size: 1rem;
+      padding: 0 1rem;
+      min-height: 1px;
+    }
+
+    .col-4 {
+      width: 25%;
+    }
+
+    .col-3 {
+      width: 33.33%;
+    }
+
+    .col-2 {
+      width: 50%;
+    }
+
+    .col-2-4 {
+      width: 75%;
+    }
+
+    .col-1 {
+      width: 100%;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .text-right {
+      text-align: right;
+    }
+
+    a {
+      color: #F14C4C;
+      text-decoration: none;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .hidetax .taxrelated {
+      display: none;
+    }
+
+    .showtax .notaxrelated {
+      display: none;
+    }
+
+    .hidedate .daterelated {
+      display: none;
+    }
+
+    .showdate .notdaterelated {
+      display: none;
+    }
+
+    /**
+ * HEADER
+ */
+    header {
+      margin: 1rem 0 0;
+      padding: 0 0 2rem 0;
+      border-bottom: 3pt solid #F14C4C;
+    }
+
+    header p {
+      font-size: .9rem;
+    }
+
+    header a {
+      color: #222;
+    }
+
+    .logo {
+      margin: 0 auto;
+      width: auto;
+      height: auto;
+      border: none;
+      fill: #F14C4C;
+    }
+
+    .logoholder {
+      width: 10%;
+    }
+
+    .me {
+      width: 30%;
+    }
+
+    .info {
+      width: 30%;
+    }
+
+    .bank {
+      width: 30%;
+    }
+
+    /**
+ * SECTION
+ */
+    .section {
+      margin: 3rem 0 0;
+    }
+
+    .smallme {
+      display: inline-block;
+      text-transform: uppercase;
+      margin: 0 0 2rem 0;
+      font-size: .9rem;
+    }
+
+    .client {
+      margin: 0 0 3rem 0;
+    }
+
+    h1 {
+      margin: 0;
+      padding: 0;
+      font-size: 2rem;
+      color: #F14C4C;
+    }
+
+    /**
+ * INVOICELIST BODY
+ */
+
+    .invoicelist-body table {
+      width: 100%;
+    }
+
+    .invoicelist-body thead {
+      text-align: left;
+      border-bottom: 2pt solid #666;
+    }
+
+    .invoicelist-body td,
+    .invoicelist-body th {
+      position: relative;
+      padding: 1rem;
+    }
+
+    .invoicelist-body tr:nth-child(even) {
+      background: #eee;
+    }
+
+    /**
+ * INVOICE LIST FOOTER
+ */
+
+    .invoicelist-footer table {
+      float: right;
+      width: 50%;
+      padding: 1rem 0;
+    }
+
+    .invoicelist-footer table td {
+      text-align: right;
+    }
+
+    .invoicelist-footer table tr:nth-child(2) td {
+      padding-top: 0;
+    }
+
+    .invoicelist-footer table #total_price {
+      font-size: 2rem;
+      color: #F14C4C;
+    }
+
+    th {
+      background-color: #222;
+      color: #ddd;
+    }
+
+    td,
+    th {
+      text-align: center;
+    }
+
+    .table {
+      display: table;
+    }
+
+    .table>div {
+      display: table-cell;
+    }
+  </style>
+
+</head>
+
+<body translate="no" class="hidetax hidenote hidedate">
+  <header class="row">
+    <div class="table">
+      <div class="logoholder text-center" contenteditable="" style="padding: 1rem;">
+        <img src="img/logo.svg" alt="logo" width="80">
+      </div>
+      <!--.logoholder-->
+      <div class="me" contenteditable="">
+        <h2>
+          <strong><%= data.customerDetails.displayName.toUpperCase() %></strong><br>
+        </h2>
+        <p>
+          <span><%= data.customerDetails.emailAddresses.length && data.customerDetails.emailAddresses[0].email %></span><br>
+          <span><%= data.customerDetails.phoneNumbers.length && data.customerDetails.phoneNumbers[0].number %></span><br>
+          <span><%= data.memoDate %></span>
+        </p>
+      </div>
+    </div>
+
+  </header>
+
+  <div class="invoicelist-body">
+    <table rules="none">
+      <thead contenteditable="">
+        <tr>
+          <th>Title</th>
+          <th>Price</th>
+          <th>Quantity(KG)</th>
+          <th>Sub Total($)</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% data.items && data.items.forEach(item=>{ %>
+        <tr>
+          <td><%= item.title %></td>
+          <td><%= item.price %></td>
+          <td><%= item.qty %></td>
+          <td><%= item.subTotal %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <!--.invoice-body-->
+
+  <div class="invoicelist-footer">
+    <table>
+      <tbody>
+        <tr>
+          <td><strong>Grand Total</strong></td>
+          <td id="total_price">$ <%= data.items.reduce((p, c) => parseFloat(p) + parseFloat(c.subTotal), 0) %></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</body>
+
+</html>
